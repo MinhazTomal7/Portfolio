@@ -1,35 +1,58 @@
 // src/sections/Contact.jsx
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "../components/Button";
 
-const generateParticles = (count) => {
-    const colors = ["#3B82F6", "#8B5CF6", "#EC4899", "#FACC15"];
-    return Array.from({ length: count }, () => ({
-        size: Math.random() * 6 + 2,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        speed: Math.random() * 0.5 + 0.1,
-        direction: Math.random() > 0.5 ? 1 : -1,
-    }));
-};
-
 const Contact = () => {
+    const canvasRef = useRef(null);
     const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-    const [particles, setParticles] = useState(generateParticles(30));
 
+    // Particle canvas
     useEffect(() => {
-        const interval = setInterval(() => {
-            setParticles((prev) =>
-                prev.map((p) => ({
-                    ...p,
-                    x: (p.x + Math.random() * 0.3 * p.direction) % 100,
-                    y: (p.y + Math.random() * 0.3 * p.direction) % 100,
-                }))
-            );
-        }, 50); // slower to reduce lag
-        return () => clearInterval(interval);
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        const particleCount = 60;
+        const particles = Array.from({ length: particleCount }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.2,
+            vy: (Math.random() - 0.5) * 0.2,
+            size: Math.random() * 2 + 0.5,
+        }));
+
+        let animationId;
+        const animate = () => {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach((p) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x <= 0 || p.x >= width) p.vx *= -1;
+                if (p.y <= 0 || p.y >= height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(255,255,255,0.6)";
+                ctx.shadowColor = "rgba(255,255,255,0.8)";
+                ctx.shadowBlur = 8;
+                ctx.fill();
+            });
+            animationId = requestAnimationFrame(animate);
+        };
+        animate();
+
+        const handleResize = () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        };
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            cancelAnimationFrame(animationId);
+            window.removeEventListener("resize", handleResize);
+        };
     }, []);
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,33 +63,12 @@ const Contact = () => {
     };
 
     return (
-        <section className="relative py-24 bg-gray-900 text-white overflow-hidden">
-            {/* Neon particles */}
-            {particles.map((p, i) => (
-                <div
-                    key={i}
-                    className="absolute rounded-full pointer-events-none"
-                    style={{
-                        width: `${p.size}px`,
-                        height: `${p.size}px`,
-                        top: `${p.y}%`,
-                        left: `${p.x}%`,
-                        backgroundColor: p.color,
-                        opacity: 0.35,
-                        filter: "blur(4px)",
-                        transform: "translate(-50%, -50%)",
-                        mixBlendMode: "screen",
-                    }}
-                />
-            ))}
+        <section className="relative w-full min-h-screen overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black flex items-center justify-center">
+            {/* Particle Canvas */}
+            <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-0" />
 
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, type: "spring", stiffness: 80 }}
-                className="max-w-3xl mx-auto p-10 bg-gray-800/60 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-700 hover:scale-105 transition-transform duration-300"
-            >
-                <h2 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-pulse text-center">
+            <div className="relative z-10 w-full max-w-3xl px-6 md:px-0">
+                <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
                     Contact Me
                 </h2>
 
@@ -77,7 +79,7 @@ const Contact = () => {
                         placeholder="Your Name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="p-4 rounded-xl border border-purple-500 bg-gray-900/50 placeholder-gray-400 text-white focus:ring-2 focus:ring-purple-500 outline-none transition"
+                        className="p-4 rounded-xl border border-gray-300 dark:border-purple-500 bg-white dark:bg-gray-900 placeholder-gray-600 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition"
                         required
                     />
                     <input
@@ -86,7 +88,7 @@ const Contact = () => {
                         placeholder="Your Email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="p-4 rounded-xl border border-purple-500 bg-gray-900/50 placeholder-gray-400 text-white focus:ring-2 focus:ring-purple-500 outline-none transition"
+                        className="p-4 rounded-xl border border-gray-300 dark:border-purple-500 bg-white dark:bg-gray-900 placeholder-gray-600 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition"
                         required
                     />
                     <textarea
@@ -95,15 +97,18 @@ const Contact = () => {
                         value={formData.message}
                         onChange={handleChange}
                         rows={5}
-                        className="p-4 rounded-xl border border-purple-500 bg-gray-900/50 placeholder-gray-400 text-white focus:ring-2 focus:ring-purple-500 outline-none transition resize-none"
+                        className="p-4 rounded-xl border border-gray-300 dark:border-purple-500 bg-white dark:bg-gray-900 placeholder-gray-600 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition resize-none"
                         required
                     />
 
-                    <Button type="submit" className="self-start px-8 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 transition-transform duration-300 ease-out hover:scale-105 shadow-lg shadow-purple-500/20 text-white font-medium">
+                    <Button
+                        type="submit"
+                        className="self-start px-8 py-3 rounded-xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:scale-105 transition-transform duration-300 shadow-lg text-white font-medium"
+                    >
                         Send Message
                     </Button>
                 </form>
-            </motion.div>
+            </div>
         </section>
     );
 };

@@ -1,21 +1,8 @@
 // src/sections/Projects.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import ProjectCard from "../components/ProjectCard";
 import { motion } from "framer-motion";
 
-// Generate neon particles
-const generateParticles = (count) => {
-    const colors = ["#3B82F6", "#8B5CF6", "#EC4899", "#FACC15"];
-    return Array.from({ length: count }, () => ({
-        size: Math.random() * 6 + 3,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        direction: Math.random() > 0.5 ? 1 : -1,
-    }));
-};
-
-// Self-contained projects array
 const projects = [
     {
         title: "PlantNest E-commerce",
@@ -42,88 +29,101 @@ const projects = [
         image: "/assets/project4.jpg",
         link: "#",
     },
-    // Add more projects as needed
 ];
 
 const Projects = () => {
-    const [particles, setParticles] = useState(generateParticles(50));
-    const [mouse, setMouse] = useState({ x: 0, y: 0 });
+    const canvasRef = useRef(null);
 
-    // Mouse position for neon trail
     useEffect(() => {
-        const handleMouseMove = (e) => setMouse({ x: e.clientX, y: e.clientY });
-        window.addEventListener("mousemove", handleMouseMove);
-        return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, []);
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
 
-    // Animate particles oscillation
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setParticles((prev) =>
-                prev.map((p) => ({
-                    ...p,
-                    x: (p.x + Math.random() * 0.5 * p.direction) % 100,
-                    y: (p.y + Math.random() * 0.5 * p.direction) % 100,
-                }))
-            );
-        }, 50);
-        return () => clearInterval(interval);
+        const particleCount = 60;
+        const particles = Array.from({ length: particleCount }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.2,
+            vy: (Math.random() - 0.5) * 0.2,
+            size: Math.random() * 2 + 0.5,
+        }));
+
+        let animationId;
+        const animate = () => {
+            const isDark = document.documentElement.classList.contains("dark");
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach((p) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x <= 0 || p.x >= width) p.vx *= -1;
+                if (p.y <= 0 || p.y >= height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = isDark
+                    ? "rgba(255,255,255,0.6)"
+                    : "rgba(50,50,50,0.5)";
+                ctx.shadowColor = isDark
+                    ? "rgba(255,255,255,0.8)"
+                    : "rgba(50,50,50,0.3)";
+                ctx.shadowBlur = 8;
+                ctx.fill();
+            });
+            animationId = requestAnimationFrame(animate);
+        };
+        animate();
+
+        const handleResize = () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        };
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            cancelAnimationFrame(animationId);
+            window.removeEventListener("resize", handleResize);
+        };
     }, []);
 
     return (
         <section
             id="projects"
-            className="relative py-32 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white overflow-hidden"
+            className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black"
         >
-            {/* Neon particles */}
-            {particles.map((p, i) => (
-                <div
-                    key={i}
-                    className="absolute rounded-full pointer-events-none"
-                    style={{
-                        width: `${p.size}px`,
-                        height: `${p.size}px`,
-                        top: `${p.y}%`,
-                        left: `${p.x}%`,
-                        backgroundColor: p.color,
-                        opacity: 0.4,
-                        filter: "blur(4px)",
-                        transform: `translate(-50%, -50%)`,
-                        mixBlendMode: "screen",
-                    }}
-                />
-            ))}
+            {/* Starry Canvas */}
+            <canvas
+                ref={canvasRef}
+                className="fixed top-0 left-0 w-full h-full z-0"
+            />
 
+            <div className="relative z-10 max-w-7xl mx-auto py-32 px-4">
+                {/* Section Heading */}
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-16 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
+                    My Projects
+                </h2>
 
-
-            <h2 className="text-5xl md:text-6xl font-bold text-center mb-20 relative z-10 animate-fade-in-up text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
-                My Projects
-            </h2>
-
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 relative z-10">
-                {projects.map((project, index) => (
-                    <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 100, rotate: 10 }}
-                        whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-                        viewport={{ once: true }}
-                        transition={{
-                            duration: 0.8,
-                            delay: index * 0.3,
-                            type: "spring",
-                            stiffness: 100,
-                        }}
-                        className="group perspective-1000"
-                    >
-                        <ProjectCard {...project} />
-                    </motion.div>
-                ))}
+                {/* Projects Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {projects.map((project, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 50, rotate: 5 }}
+                            whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+                            viewport={{ once: true }}
+                            transition={{
+                                duration: 0.8,
+                                delay: index * 0.2,
+                                type: "spring",
+                                stiffness: 100,
+                            }}
+                        >
+                            <ProjectCard {...project} />
+                        </motion.div>
+                    ))}
+                </div>
             </div>
-
-            {/* Ultra blurred shapes */}
-            <div className="absolute -bottom-60 -left-40 w-96 h-96 bg-blue-500 rounded-full opacity-20 blur-4xl animate-pulse mix-blend-screen"></div>
-            <div className="absolute -top-60 -right-40 w-96 h-96 bg-purple-500 rounded-full opacity-20 blur-4xl animate-pulse mix-blend-screen"></div>
-            <div className="absolute top-1/2 left-20 w-64 h-64 bg-pink-500 rounded-full opacity-15 blur-3xl animate-float mix-blend-screen"></div>
         </section>
     );
 };
