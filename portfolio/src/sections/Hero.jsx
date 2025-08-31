@@ -1,111 +1,133 @@
 // src/sections/Hero.jsx
-import React, { useEffect, useState, useRef } from "react";
-import AnimatedText from "../components/AnimatedText";
+import React, { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import Button from "../components/Button";
+import Navbar from "../components/Navbar";
+import HeroImage from "../assets/hero-image.jpg";
 
 const Hero = () => {
     const canvasRef = useRef(null);
-    const [particles, setParticles] = useState([]);
 
-    // Particle setup
     useEffect(() => {
         const canvas = canvasRef.current;
+        if (!canvas) return;
         const ctx = canvas.getContext("2d");
-        const width = canvas.width = window.innerWidth;
-        const height = canvas.height = window.innerHeight;
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
 
-        const particleCount = 120;
-        const tempParticles = [];
-        for (let i = 0; i < particleCount; i++) {
-            tempParticles.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                size: Math.random() * 3 + 1,
-                color: ["#3B82F6", "#8B5CF6", "#EC4899", "#FACC15"][Math.floor(Math.random() * 4)],
-            });
-        }
-        setParticles(tempParticles);
+        const particleCount = 60;
+        const particles = Array.from({ length: particleCount }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.2,
+            vy: (Math.random() - 0.5) * 0.2,
+            size: Math.random() * 2 + 0.5,
+        }));
 
+        let animationId;
         const animate = () => {
             ctx.clearRect(0, 0, width, height);
-            // Draw lines
-            for (let i = 0; i < particleCount; i++) {
-                for (let j = i + 1; j < particleCount; j++) {
-                    const dx = tempParticles[i].x - tempParticles[j].x;
-                    const dy = tempParticles[i].y - tempParticles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
-                        ctx.strokeStyle = `rgba(255,255,255,${1 - dist / 120})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.beginPath();
-                        ctx.moveTo(tempParticles[i].x, tempParticles[i].y);
-                        ctx.lineTo(tempParticles[j].x, tempParticles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-            // Draw particles
-            tempParticles.forEach(p => {
+            particles.forEach((p) => {
                 p.x += p.vx;
                 p.y += p.vy;
-                if (p.x < 0 || p.x > width) p.vx *= -1;
-                if (p.y < 0 || p.y > height) p.vy *= -1;
+                if (p.x <= 0 || p.x >= width) p.vx *= -1;
+                if (p.y <= 0 || p.y >= height) p.vy *= -1;
 
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.shadowColor = p.color;
-                ctx.shadowBlur = 10;
+                ctx.fillStyle = "rgba(255,255,255,0.6)";
+                ctx.shadowColor = "rgba(255,255,255,0.8)";
+                ctx.shadowBlur = 8;
                 ctx.fill();
             });
-            requestAnimationFrame(animate);
+            animationId = requestAnimationFrame(animate);
         };
-
         animate();
-        window.addEventListener("resize", () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+
+        const handleResize = () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        };
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            cancelAnimationFrame(animationId);
+            window.removeEventListener("resize", handleResize);
+        };
     }, []);
 
+    const nameWords = ["Minhazul", "Amin", "Tomal"];
+
     return (
-        <section className="relative h-screen w-full overflow-hidden bg-gray-900 dark:bg-black">
-            {/* Particle Canvas */}
-            <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full z-0" />
+        <section className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black">
+            {/* Particle Canvas - Full Page */}
+            <canvas
+                ref={canvasRef}
+                className="fixed top-0 left-0 w-full h-full z-0"
+            />
 
-            {/* Floating 3D Shapes */}
-            <div className="absolute w-full h-full pointer-events-none">
-                <div className="absolute top-10 left-20 w-72 h-72 bg-purple-500 opacity-20 rounded-full animate-bounce-slow blur-3xl"></div>
-                <div className="absolute bottom-10 right-32 w-60 h-60 bg-blue-500 opacity-20 rounded-full animate-bounce-slow blur-2xl"></div>
-                <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-pink-500 opacity-20 rounded-full animate-bounce-slow blur-xl"></div>
+            {/* Navbar */}
+            <div className="relative z-20">
+                <Navbar />
             </div>
 
-            {/* Main Content */}
-            <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-                <h1 className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x drop-shadow-lg">
-                    <AnimatedText text="Hi, I’m Minhazul Amin Tomal" speed={80} />
-                </h1>
-                <p className="mt-6 text-lg md:text-xl text-gray-300 max-w-2xl animate-fade-in-up delay-300 drop-shadow-md">
-                    I build modern, responsive websites with cutting-edge UI, animations, and dark/light mode.
-                </p>
+            {/* Hero Content */}
+            <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center md:flex-row md:items-center justify-between px-6 md:px-12 gap-12 md:gap-20 pt-24 md:pt-32">
+                {/* Left Text */}
+                <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left space-y-4">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                        <span className="block text-gray-600 dark:text-gray-300 text-lg mb-2">
+                            Hi, I’m
+                        </span>
+                        <motion.span
+                            className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                        >
+                            {nameWords.join(" ")}
+                        </motion.span>
+                    </h1>
+                    <motion.p
+                        className="text-gray-600 dark:text-gray-300 text-base sm:text-lg md:text-xl max-w-md md:max-w-xl"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.3 }}
+                    >
+                        I build modern, responsive websites with cutting-edge UI, smooth animations, and professional dark/light mode.
+                    </motion.p>
 
-                {/* Buttons */}
-                <div className="mt-10 flex gap-4 justify-center animate-fade-in-up delay-500">
-                    <Button href="/Resume.pdf" className="rounded-xl shadow-xl hover:scale-105 transform transition-all duration-300">
-                        Download CV
-                    </Button>
-                    <Button href="#projects" className="rounded-xl shadow-xl bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700 hover:scale-105 transform transition-all duration-300">
-                        See Projects
-                    </Button>
+                    <motion.div
+                        className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.5 }}
+                    >
+                        <Button
+                            href="/Resume.pdf"
+                            className="rounded-lg shadow-lg px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold hover:opacity-90 transition"
+                        >
+                            Download CV
+                        </Button>
+                        <Button
+                            href="#projects"
+                            className="rounded-lg shadow-md px-6 py-3 bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white font-medium hover:bg-gray-300 dark:hover:bg-gray-700 transition"
+                        >
+                            See Projects
+                        </Button>
+                    </motion.div>
                 </div>
-            </div>
 
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-10 w-full flex justify-center">
-                <div className="w-6 h-10 border-2 border-white rounded-full flex items-start justify-center p-1 animate-bounce">
-                    <div className="w-2 h-2 bg-white rounded-full mb-1 animate-bounce"></div>
+                {/* Right Image */}
+                <div className="flex-1 flex justify-center md:justify-end">
+                    <motion.img
+                        src={HeroImage}
+                        alt="Hero"
+                        className="w-64 sm:w-72 md:w-96 rounded-xl shadow-2xl"
+                        initial={{ opacity: 1, y: 10 }}
+                        animate={{ opacity: 1, y: [0, -8, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatType: "loop" }}
+                    />
                 </div>
             </div>
         </section>

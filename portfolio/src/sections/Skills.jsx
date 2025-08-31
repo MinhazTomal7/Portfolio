@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+// src/sections/Skills.jsx
+import React, { useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
@@ -21,14 +22,14 @@ const Skills = () => {
     return (
         <section
             id="skills"
-            className="py-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white relative overflow-hidden"
+            className="relative py-16 sm:py-20 bg-gradient-to-b from-gray-100 via-white to-gray-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden"
         >
-            {/* Floating background sparkles */}
-            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                {[...Array(20)].map((_, i) => (
+            {/* Floating sparkles */}
+            <div className="absolute inset-0 pointer-events-none">
+                {[...Array(12)].map((_, i) => (
                     <div
                         key={i}
-                        className="absolute rounded-full opacity-20 animate-pulse"
+                        className="absolute rounded-full opacity-10 animate-pulse"
                         style={{
                             width: `${Math.random() * 6 + 2}px`,
                             height: `${Math.random() * 6 + 2}px`,
@@ -40,11 +41,13 @@ const Skills = () => {
                 ))}
             </div>
 
-            <h2 className="text-4xl font-bold text-center mb-12 relative z-10">My Skills</h2>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-12 relative z-10 text-gray-900 dark:text-white">
+                My Skills
+            </h2>
 
             <div
                 ref={ref}
-                className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10"
+                className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 justify-items-center px-4"
             >
                 {skills.map((skill, index) => (
                     <motion.div
@@ -52,11 +55,15 @@ const Skills = () => {
                         initial={{ opacity: 0, y: 50 }}
                         animate={controls}
                         variants={{
-                            visible: { opacity: 1, y: 0, transition: { delay: index * 0.2, duration: 0.8, type: "spring" } },
+                            visible: {
+                                opacity: 1,
+                                y: 0,
+                                transition: { delay: index * 0.2, duration: 0.8, type: "spring" },
+                            },
                         }}
-                        className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg backdrop-blur-md border border-gray-200 dark:border-gray-700 transition hover:scale-105 hover:shadow-2xl"
+                        className="w-full sm:w-[300px] md:w-full p-6 bg-white/40 dark:bg-gray-800/40 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 transition hover:scale-105 hover:shadow-2xl"
                     >
-                        <h3 className="text-xl font-semibold mb-4">{skill.name}</h3>
+                        <h3 className="text-xl font-semibold mb-4 text-center">{skill.name}</h3>
                         <div className="w-full bg-gray-200 dark:bg-gray-700 h-4 rounded-full overflow-hidden">
                             <motion.div
                                 className={`h-4 rounded-full bg-gradient-to-r ${skill.color} shadow-lg`}
@@ -69,6 +76,7 @@ const Skills = () => {
                     </motion.div>
                 ))}
             </div>
+
         </section>
     );
 };

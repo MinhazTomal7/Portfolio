@@ -10,19 +10,19 @@ import "./index.css";
 import Footer from "./components/Footer.jsx";
 
 const App = () => {
-    const [theme, toggleTheme] = useTheme(); // <-- Now this works
+    const [theme, toggleTheme] = useTheme();
 
     return (
         <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-500">
-            <Navbar theme={theme} toggleTheme={toggleTheme} />
-            <main className="pt-20">
+
+            {/* Remove pt-20 so Hero touches Navbar */}
+            <main className="pt-0">
                 <Hero />
                 <Skills />
                 <Projects />
-                <About/>
-                <Contact/>
-                <Footer/>
-
+                <About />
+                <Contact />
+                <Footer />
             </main>
         </div>
     );
