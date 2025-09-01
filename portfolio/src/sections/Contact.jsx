@@ -34,8 +34,17 @@ const Contact = () => {
 
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(255,255,255,0.6)";
-                ctx.shadowColor = "rgba(255,255,255,0.8)";
+
+                // Hero-style neon star colors
+                const colors = [
+                    "rgba(59, 130, 246, 0.6)",  // bright blue
+                    "rgba(139, 92, 246, 0.6)",  // purple
+                    "rgba(236, 72, 153, 0.6)"   // pink
+                ];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+                ctx.fillStyle = color;
+                ctx.shadowColor = color;
                 ctx.shadowBlur = 8;
                 ctx.fill();
             });
@@ -63,7 +72,12 @@ const Contact = () => {
     };
 
     return (
-        <section className="relative w-full min-h-screen overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black flex items-center justify-center">
+        <section
+            className="relative w-full min-h-screen overflow-hidden
+                       bg-gradient-to-b from-purple-200 via-pink-100 to-purple-200
+                       dark:from-gray-950 dark:via-gray-900 dark:to-black
+                       flex items-center justify-center"
+        >
             {/* Particle Canvas */}
             <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-0" />
 

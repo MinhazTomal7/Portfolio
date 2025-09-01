@@ -51,9 +51,8 @@ const Navbar = () => {
                     whileHover={{scale: 1.1, rotate: [0, 5, -5, 0]}}
                 >
                     {/* Logo initials */}
-                    <span className="mr-1">M</span>
-                    <span className="mr-1">A</span>
-                    <span>T</span>
+                    <span className="mr-1">MINHAZ</span>
+
                 </motion.div>
 
 

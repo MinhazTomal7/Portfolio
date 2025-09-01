@@ -64,10 +64,10 @@ const Projects = () => {
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fillStyle = isDark
                     ? "rgba(255,255,255,0.6)"
-                    : "rgba(50,50,50,0.5)";
+                    : "rgba(120,180,255,0.6)"; // soft light blue
                 ctx.shadowColor = isDark
                     ? "rgba(255,255,255,0.8)"
-                    : "rgba(50,50,50,0.3)";
+                    : "rgba(100,150,255,0.5)";
                 ctx.shadowBlur = 8;
                 ctx.fill();
             });
@@ -90,9 +90,11 @@ const Projects = () => {
     return (
         <section
             id="projects"
-            className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black"
+            className="relative min-h-screen w-full overflow-hidden
+                bg-gradient-to-b from-blue-200 via-blue-100 to-blue-300
+                dark:from-gray-950 dark:via-gray-900 dark:to-black"
         >
-            {/* Starry Canvas */}
+            {/* Particle Canvas */}
             <canvas
                 ref={canvasRef}
                 className="fixed top-0 left-0 w-full h-full z-0"

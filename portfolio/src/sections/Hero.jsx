@@ -20,12 +20,19 @@ const Hero = () => {
         if (wordIndex < nameWords.length) {
             if (charIndex < nameWords[wordIndex].length) {
                 const timeout = setTimeout(() => {
-                    setTypedName((prev) => prev + nameWords[wordIndex][charIndex] + (charIndex === nameWords[wordIndex].length - 1 && wordIndex !== nameWords.length - 1 ? " " : ""));
+                    setTypedName(
+                        (prev) =>
+                            prev +
+                            nameWords[wordIndex][charIndex] +
+                            (charIndex === nameWords[wordIndex].length - 1 &&
+                            wordIndex !== nameWords.length - 1
+                                ? " "
+                                : "")
+                    );
                     setCharIndex((prev) => prev + 1);
                 }, 150);
                 return () => clearTimeout(timeout);
             } else {
-                // Move to next word
                 setWordIndex((prev) => prev + 1);
                 setCharIndex(0);
             }
@@ -64,11 +71,11 @@ const Hero = () => {
 
                 ctx.fillStyle = isDark
                     ? "rgba(255,255,255,0.7)"
-                    : "rgba(0,150,255,0.6)";
+                    : "rgba(150,200,255,0.6)"; // soft light blue
 
                 ctx.shadowColor = isDark
                     ? "rgba(200,150,255,0.5)"
-                    : "rgba(0,0,0,0.3)";
+                    : "rgba(100,150,255,0.5)"; // subtle glow
                 ctx.shadowBlur = 8;
 
                 ctx.fill();
@@ -103,20 +110,23 @@ const Hero = () => {
     }, []);
 
     return (
-        <section className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black">
+        <section
+            className="relative min-h-screen w-full overflow-hidden
+    bg-gradient-to-b from-blue-200 via-blue-100 to-blue-300
+    dark:from-gray-950 dark:via-gray-900 dark:to-black"
+        >
             {/* Particle Canvas */}
             <canvas
                 ref={canvasRef}
                 className="fixed top-0 left-0 w-full h-full z-0"
             />
 
-            {/* Navbar */}
             <div className="relative z-20">
                 <Navbar />
             </div>
 
             {/* Hero Content */}
-            <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-12 md:gap-24 pt-24 md:pt-32 px-6 md:px-4">
+            <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-12 md:gap-24 pt-16 md:pt-20 px-6 md:px-4">
                 {/* Left Text */}
                 <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left space-y-6">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight">
@@ -143,9 +153,9 @@ const Hero = () => {
 
                     <motion.div
                         className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4"
-                        initial={{opacity: 0, y: 10}}
-                        animate={{opacity: 1, y: 0}}
-                        transition={{duration: 0.8, delay: 0.5}}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.5 }}
                     >
                         <Button
                             href="/Resume.pdf"
@@ -154,10 +164,10 @@ const Hero = () => {
                             Download CV
                         </Button>
                         <button className="
-                                          px-6 py-3 rounded-lg font-medium transition-colors
-                                          bg-black text-white hover:bg-gray-800
-                                          dark:bg-white dark:text-black dark:hover:bg-gray-200
-                                        ">
+                            px-6 py-3 rounded-lg font-medium transition-colors
+                            bg-black text-white hover:bg-gray-800
+                            dark:bg-white dark:text-black dark:hover:bg-gray-200
+                        ">
                             See Projects
                         </button>
                     </motion.div>

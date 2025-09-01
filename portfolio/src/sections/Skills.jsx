@@ -22,7 +22,9 @@ const Skills = () => {
     return (
         <section
             id="skills"
-            className="relative py-16 sm:py-20 bg-gradient-to-b from-gray-100 via-white to-gray-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden"
+            className="relative py-16 sm:py-20
+                bg-gradient-to-b from-blue-200 via-blue-100 to-blue-300
+                dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden"
         >
             {/* Floating sparkles */}
             <div className="absolute inset-0 pointer-events-none">
@@ -35,7 +37,11 @@ const Skills = () => {
                             height: `${Math.random() * 6 + 2}px`,
                             top: `${Math.random() * 100}%`,
                             left: `${Math.random() * 100}%`,
-                            background: ["#3B82F6", "#8B5CF6", "#EC4899", "#FACC15"][Math.floor(Math.random() * 4)],
+                            background: [
+                                "#A8C8FF", // soft blue
+                                "#90CAF9", // light blue
+                                "#63A4FF", // deeper blue
+                            ][Math.floor(Math.random() * 3)],
                         }}
                     ></div>
                 ))}
@@ -76,7 +82,6 @@ const Skills = () => {
                     </motion.div>
                 ))}
             </div>
-
         </section>
     );
 };

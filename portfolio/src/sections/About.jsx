@@ -62,9 +62,12 @@ const About = () => {
     return (
         <section
             id="about"
-            className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black py-24"
+            className="relative min-h-screen w-full overflow-hidden
+               bg-gradient-to-b from-purple-200 via-pink-100 to-purple-200
+               dark:from-gray-950 dark:via-gray-900 dark:to-black py-24"
         >
-            {/* Starry Canvas */}
+
+        {/* Starry Canvas */}
             <canvas
                 ref={canvasRef}
                 className="fixed top-0 left-0 w-full h-full z-0"
