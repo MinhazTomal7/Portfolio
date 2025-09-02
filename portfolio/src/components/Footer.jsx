@@ -36,14 +36,10 @@ const Footer = () => {
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
 
-                // Pastel star colors (matching Hero/Contact)
+                // Particle colors
                 const colors = isDark
                     ? ["rgba(255,255,255,0.6)"]
-                    : [
-                        "rgba(232, 210, 255, 0.6)",
-                        "rgba(255, 228, 230, 0.6)",
-                        "rgba(255, 250, 240, 0.5)",
-                    ];
+                    : ["rgba(100,150,255,0.4)"]; // single tone for light theme
                 const color = colors[Math.floor(Math.random() * colors.length)];
 
                 ctx.fillStyle = color;
@@ -69,7 +65,7 @@ const Footer = () => {
     }, []);
 
     return (
-        <footer className="relative py-12 overflow-hidden bg-purple-200 dark:bg-black">
+        <footer className="relative py-12 overflow-hidden bg-blue-300 dark:bg-black">
             {/* Starry Canvas */}
             <canvas
                 ref={canvasRef}

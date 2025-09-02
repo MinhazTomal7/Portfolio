@@ -1,10 +1,13 @@
 // src/sections/Contact.jsx
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
 import Button from "../components/Button";
 
 const Contact = () => {
     const canvasRef = useRef(null);
     const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+    const [loading, setLoading] = useState(false);
 
     // Particle canvas
     useEffect(() => {
@@ -35,11 +38,10 @@ const Contact = () => {
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
 
-                // Hero-style neon star colors
                 const colors = [
-                    "rgba(59, 130, 246, 0.6)",  // bright blue
-                    "rgba(139, 92, 246, 0.6)",  // purple
-                    "rgba(236, 72, 153, 0.6)"   // pink
+                    "rgba(59, 130, 246, 0.6)",
+                    "rgba(139, 92, 246, 0.6)",
+                    "rgba(236, 72, 153, 0.6)"
                 ];
                 const color = colors[Math.floor(Math.random() * colors.length)];
 
@@ -65,23 +67,37 @@ const Contact = () => {
     }, []);
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert("Message sent! (Backend integration pending)");
-        setFormData({ name: "", email: "", message: "" });
+        setLoading(true);
+        try {
+            await axios.post("http://localhost:5000/contact", formData);
+            alert("Message sent successfully!");
+            setFormData({ name: "", email: "", message: "" });
+        } catch (error) {
+            alert("Failed to send message. Try again.");
+            console.error(error);
+        }
+        setLoading(false);
     };
 
     return (
         <section
             className="relative w-full min-h-screen overflow-hidden
-                       bg-gradient-to-b from-purple-200 via-pink-100 to-purple-200
-                       dark:from-gray-950 dark:via-gray-900 dark:to-black
-                       flex items-center justify-center"
+               bg-gradient-to-b from-blue-300 to-blue-400
+               dark:from-gray-950 dark:to-black
+               flex items-center justify-center"
         >
-            {/* Particle Canvas */}
             <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-0" />
 
-            <div className="relative z-10 w-full max-w-3xl px-6 md:px-0">
+            <motion.div
+                className="relative z-10 w-full max-w-3xl px-6 md:px-0"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+            >
                 <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
                     Contact Me
                 </h2>
@@ -114,15 +130,15 @@ const Contact = () => {
                         className="p-4 rounded-xl border border-gray-300 dark:border-purple-500 bg-white dark:bg-gray-900 placeholder-gray-600 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition resize-none"
                         required
                     />
-
                     <Button
                         type="submit"
-                        className="self-start px-8 py-3 rounded-xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:scale-105 transition-transform duration-300 shadow-lg text-white font-medium"
+                        className={`self-start px-8 py-3 rounded-xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:scale-105 transition-transform duration-300 shadow-lg text-white font-medium ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                        disabled={loading}
                     >
-                        Send Message
+                        {loading ? "Sending..." : "Send Message"}
                     </Button>
                 </form>
-            </div>
+            </motion.div>
         </section>
     );
 };
