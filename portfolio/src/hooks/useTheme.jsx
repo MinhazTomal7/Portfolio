@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 
 const useTheme = () => {
-    const [theme, setTheme] = useState("dark");
+    // Initialize from localStorage, default to 'light' if not set
+    const getInitialTheme = () => {
+        if (typeof window !== "undefined") {
+            const savedTheme = localStorage.getItem("theme");
+            return savedTheme ? savedTheme : "light";
+        }
+        return "light";
+    };
 
-    useEffect(() => {
-        // Load saved theme from localStorage
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme) setTheme(savedTheme);
-    }, []);
+    const [theme, setTheme] = useState(getInitialTheme);
 
     useEffect(() => {
         // Apply theme to document

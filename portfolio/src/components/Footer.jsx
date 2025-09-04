@@ -65,7 +65,7 @@ const Footer = () => {
     }, []);
 
     return (
-        <footer className="relative py-12 overflow-hidden bg-blue-300 dark:bg-black">
+        <footer className="relative pt-0 pb-12 overflow-hidden bg-blue-300 dark:bg-black">
             {/* Starry Canvas */}
             <canvas
                 ref={canvasRef}
@@ -79,7 +79,7 @@ const Footer = () => {
 
                 <div className="flex gap-6 text-2xl">
                     <a
-                        href="https://github.com/yourusername"
+                        href="https://github.com/MinhazTomal7"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-blue-500 transition transform hover:scale-125 hover:rotate-12"

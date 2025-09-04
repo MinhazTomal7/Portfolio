@@ -3,11 +3,47 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Button from "../components/Button";
+import toast, { Toaster } from "react-hot-toast";
+import confetti from "canvas-confetti";
 
 const Contact = () => {
     const canvasRef = useRef(null);
     const [formData, setFormData] = useState({ name: "", email: "", message: "" });
     const [loading, setLoading] = useState(false);
+
+    // 🎉 Next-level success notification
+    const showSuccess = () => {
+        toast.success("Message sent successfully! 🚀", {
+            style: {
+                borderRadius: "12px",
+                background: "linear-gradient(to right, #3b82f6, #9333ea, #ec4899)",
+                color: "#fff",
+                fontWeight: "bold",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.3)"
+            },
+            icon: "🎉",
+        });
+
+        confetti({
+            particleCount: 120,
+            spread: 90,
+            origin: { y: 0.6 }
+        });
+    };
+
+    // ⚠️ Failure notification
+    const showError = () => {
+        toast.error("Failed to send. Try again.", {
+            style: {
+                borderRadius: "12px",
+                background: "linear-gradient(to right, #ef4444, #b91c1c)",
+                color: "#fff",
+                fontWeight: "bold",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.3)"
+            },
+            icon: "⚠️",
+        });
+    };
 
     // Particle canvas
     useEffect(() => {
@@ -28,6 +64,7 @@ const Contact = () => {
 
         let animationId;
         const animate = () => {
+            const isDark = document.documentElement.classList.contains("dark");
             ctx.clearRect(0, 0, width, height);
             particles.forEach((p) => {
                 p.x += p.vx;
@@ -37,16 +74,12 @@ const Contact = () => {
 
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-
-                const colors = [
-                    "rgba(59, 130, 246, 0.6)",
-                    "rgba(139, 92, 246, 0.6)",
-                    "rgba(236, 72, 153, 0.6)"
-                ];
-                const color = colors[Math.floor(Math.random() * colors.length)];
-
-                ctx.fillStyle = color;
-                ctx.shadowColor = color;
+                ctx.fillStyle = isDark
+                    ? "rgba(255,255,255,0.6)"
+                    : "rgba(120,180,255,0.6)"; // same soft blue as Projects
+                ctx.shadowColor = isDark
+                    ? "rgba(255,255,255,0.8)"
+                    : "rgba(100,150,255,0.5)";
                 ctx.shadowBlur = 8;
                 ctx.fill();
             });
@@ -73,11 +106,11 @@ const Contact = () => {
         setLoading(true);
         try {
             await axios.post("http://localhost:5000/contact", formData);
-            alert("Message sent successfully!");
+            showSuccess();
             setFormData({ name: "", email: "", message: "" });
         } catch (error) {
-            alert("Failed to send message. Try again.");
             console.error(error);
+            showError();
         }
         setLoading(false);
     };
@@ -85,10 +118,14 @@ const Contact = () => {
     return (
         <section
             className="relative w-full min-h-screen overflow-hidden
-               bg-gradient-to-b from-blue-300 to-blue-400
-               dark:from-gray-950 dark:to-black
-               flex items-center justify-center"
+                bg-gradient-to-b from-blue-200 via-blue-100 to-blue-300
+                dark:from-gray-950 dark:via-gray-900 dark:to-black
+                flex items-center justify-center
+                mb-0 pb-0"
         >
+            {/* 🎉 Toast System */}
+            <Toaster position="top-right" reverseOrder={false} />
+
             <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-0" />
 
             <motion.div
